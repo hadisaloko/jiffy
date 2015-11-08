@@ -96,8 +96,7 @@ encode(Data, Options) ->
         {iter, Encoder, Stack, IOBuf} ->
             encode_loop(Data, Options, Encoder, Stack, IOBuf);
         IOData ->
-            IOData = re:replace(IOData, "\\\"nil\\\"", "null", [global, {return, binary}]),
-            IOData
+            re:replace(IOData, "\\\"nil\\\"", "null", [global, {return, binary}])
     end.
 
 
