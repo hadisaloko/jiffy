@@ -629,6 +629,7 @@ make_object(ErlNifEnv* env, ERL_NIF_TERM pairs, ERL_NIF_TERM* out, int ret_map)
     ERL_NIF_TERM ret;
     ERL_NIF_TERM key;
     ERL_NIF_TERM val;
+    ErlNifBinary bin;
 
 #if MAP_TYPE_PRESENT
     if(ret_map) {
@@ -637,6 +638,11 @@ make_object(ErlNifEnv* env, ERL_NIF_TERM pairs, ERL_NIF_TERM* out, int ret_map)
             if(!enif_get_list_cell(env, pairs, &key, &pairs)) {
                 assert(0 == 1 && "Unbalanced object pairs.");
             }
+
+            enif_inspect_binary(env, key, &bin);
+            bin.data[bin.size] = '\0';
+            key = enif_make_atom(env, (char*) bin.data);
+
             if(!enif_make_map_put(env, ret, key, val, &ret)) {
                 return 0;
             }
