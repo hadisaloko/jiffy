@@ -96,7 +96,7 @@ encode(Data, Options) ->
         {iter, Encoder, Stack, IOBuf} ->
             encode_loop(Data, Options, Encoder, Stack, IOBuf);
         IOData ->
-            re:replace(IOData, "\\\"nil\\\"", "null", [global, {return, binary}])
+            binary:replace(erlang:iolist_to_binary(IOData), <<"\"nil\"">>, <<"null">>, [global])
     end.
 
 
