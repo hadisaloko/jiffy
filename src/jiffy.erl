@@ -85,7 +85,7 @@ encode(Data) ->
 -spec encode(json_value(), encode_options()) -> iodata().
 encode(Data, Options) ->
     ForceUTF8 = lists:member(force_utf8, Options),
-    case nif_encode_init(Data, Options) of
+    TempIOData = case nif_encode_init(Data, Options) of
         {error, {invalid_string, _}} when ForceUTF8 == true ->
             FixedData = jiffy_utf8:fix(Data),
             encode(FixedData, Options -- [force_utf8]);
@@ -96,8 +96,9 @@ encode(Data, Options) ->
         {iter, Encoder, Stack, IOBuf} ->
             encode_loop(Data, Options, Encoder, Stack, IOBuf);
         IOData ->
-            binary:replace(erlang:iolist_to_binary(IOData), <<"\"nil\"">>, <<"null">>, [global])
-    end.
+            IOData
+    end,
+    binary:replace(erlang:iolist_to_binary(TempIOData), <<"\"nil\"">>, <<"null">>, [global]).
 
 
 finish_decode({bignum, Value}) ->
